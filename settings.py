@@ -34,6 +34,7 @@ SITE_NAME = os.path.basename(SITE_ROOT)
 
 with cd(PROJECT_ROOT):
     settings_module = '%s.settings.%s' % (SITE_NAME, PROJECT_ENVIRONMENT)
+    settings_module = os.environ.get('DJANGO_SETTINGS_MODULE', settings_module)
     try:
         from django.conf import settings as django_settings
         django.settings_module(settings_module)
