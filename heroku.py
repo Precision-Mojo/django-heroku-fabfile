@@ -15,4 +15,11 @@ def get_config(key, set_environ=True):
 
 @contextmanager
 def maintenance():
-    pass
+    with hide('running'):
+        local('heroku maintenance:on')
+    try:
+        yield
+    finally:
+        with hide('running'):
+            # Always take the app out of maintenance mode.
+            local('heroku maintenance:off')
