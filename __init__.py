@@ -4,6 +4,7 @@ import os
 from fabric.api import puts, task
 from fabric.utils import indent
 
+from deploy import deploy_to_heroku
 from publish import update_staticfiles, upload_staticfiles
 from settings import PROJECT_ENVIRONMENT, PROJECT_ROOT, SITE_NAME, STATIC_ROOT
 
@@ -23,3 +24,10 @@ def publish():
     """Publish assets to Amazon S3."""
     update_staticfiles()
     upload_staticfiles()
+
+
+@task
+def deploy():
+    """Publish and deploy the site."""
+    publish()
+    deploy_to_heroku()
