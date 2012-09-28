@@ -20,7 +20,7 @@ def msg(txt):
 
 
 def get_last_tag_match(str):
-    tags = local("git tag -l '%s'" % str)
+    tags = local("git tag -l '%s'" % str, capture=True)
 
     if len(tags) == 0:
         return None
@@ -48,16 +48,16 @@ def get_tag_names(prefix):
 
 
 def need_to_tag(version1, version2):
-    sha_version1 = local('git log --pretty=format:%%H %s -1' % version1)
+    sha_version1 = local('git log --pretty=format:%%H %s -1' % version1, capture=True)
     if version2:
-        sha_version2 = local('git log --pretty=format:%%H %s -1' % version2)
+        sha_version2 = local('git log --pretty=format:%%H %s -1' % version2, capture=True)
         if sha_version1 == sha_version2:
             return False
     return True
 
 
 def is_working_directory_clean():
-    status = local('git status')
+    status = local('git status', capture=True)
     if status.find('working directory clean') > -1:
         return True
     return False
