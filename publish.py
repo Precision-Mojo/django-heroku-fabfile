@@ -20,7 +20,6 @@ def update_staticfiles(static_cache='static_cache'):
                       ignore_patterns=get_ignore_patterns())
         local('git add %s' % static_cache)
         local('git commit %s -m "Update the static files cache directory."' % static_cache)
-        local('git push')
 
 
 @task
@@ -30,7 +29,7 @@ def upload_staticfiles(static_root=STATIC_ROOT, bucket=None):
         bucket = os.environ.get('AWS_STORAGE_BUCKET_NAME',
                                 heroku.get_config('AWS_STORAGE_BUCKET_NAME'))
     with lcd(STATIC_ROOT), hide('running'):
-        local('s3cmd sync . s3://%s -P' % bucket)
+        local('s3cmd sync . s3://%s -v -P' % bucket)
 
 
 def collectstatic(*args, **options):
