@@ -22,7 +22,7 @@ def tag_project(prefix):
     if prefix is None:
         abort('Tag prefix must be specified!')
 
-    with lcd(PROJECT_ROOT), hide('commands'):
+    with lcd(PROJECT_ROOT): #, hide('commands'):
         (last_tag_name, next_tag_name) = get_tag_names(prefix)
 
         print('Last tag: %s' % last_tag_name)

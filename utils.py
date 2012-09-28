@@ -20,7 +20,7 @@ def msg(txt):
 
 
 def get_last_tag_match(str):
-    tags = local("git tag -l '%s'" % str, capture=True)
+    tags = local('git tag -l "%s"' % str, capture=True)
 
     if len(tags) == 0:
         return None
