@@ -22,17 +22,18 @@ def tag_project(prefix):
     if prefix is None:
         abort('Tag prefix must be specified!')
 
-    (last_tag_name, next_tag_name) = get_tag_names(prefix)
+    with lcd(PROJECT_ROOT), hide('commands'):
+        (last_tag_name, next_tag_name) = get_tag_names(prefix)
 
-    print('Last tag: %s' % last_tag_name)
-    print('Next tag: %s' % next_tag_name)
+        print('Last tag: %s' % last_tag_name)
+        print('Next tag: %s' % next_tag_name)
 
-    if not need_to_tag("HEAD", last_tag_name):
-        print("Current tag '%s' is the most recent version." % last_tag_name)
-        return
+        if not need_to_tag("HEAD", last_tag_name):
+            print("Current tag '%s' is the most recent version." % last_tag_name)
+            return
 
-    #with msg("Tagging project with '%s'" % next_tag_name):
-    local('git tag -a -m "Tag latest for %s." %s' % (prefix, next_tag_name))
+        with msg("Tagging project with '%s'" % next_tag_name):
+            local('git tag -a -m "Tag latest for %s." %s' % (prefix, next_tag_name))
 
 
 @task
