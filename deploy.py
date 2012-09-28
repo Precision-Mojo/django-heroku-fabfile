@@ -4,7 +4,7 @@ from fabric.api import abort, hide, lcd, local, task
 
 import heroku
 from settings import PROJECT_ROOT
-from utils import get_tag_names, is_working_directory_clean, msg, need_to_tag
+from utils import get_tag_names, is_working_directory_clean, need_to_tag
 
 
 @task
@@ -32,8 +32,8 @@ def tag_project(prefix):
             print("Current tag '%s' is the most recent version." % last_tag_name)
             return
 
-        with msg("Tagging project with '%s'" % next_tag_name):
-            local('git tag -a -m "Tag latest for %s." %s' % (prefix, next_tag_name))
+        print("Tagging project with '%s'." % next_tag_name)
+        local('git tag -a -m "Tag latest for %s." %s' % (prefix, next_tag_name))
 
 
 @task
