@@ -44,5 +44,4 @@ def deploy_to_heroku():
         with heroku.maintenance(), hide('running'):
             local("git push heroku")
             local("heroku run python manage.py syncdb --noinput")
-            # TODO: Integrate South to support database migration.
-            #local("heroku run python manage.py migrate")
+            local("heroku run python manage.py migrate --noinput")
