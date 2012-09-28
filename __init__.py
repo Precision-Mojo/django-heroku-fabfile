@@ -27,10 +27,11 @@ def publish():
 
 
 @task
-def deploy():
+def deploy(skip_publish=False):
     """Publish and deploy the site."""
     prepare_to_deploy()
-    publish()
+    if not skip_publish:
+        publish()
     # TODO: Add support for other environments.
     tag_project('production')
     deploy_to_heroku()
