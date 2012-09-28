@@ -1,6 +1,6 @@
 """Tasks that deal with deployment."""
 
-from fabric.api import abort, hide, lcd, local, task
+from fabric.api import abort, hide, lcd, local, puts, task
 
 import heroku
 from settings import PROJECT_ROOT
@@ -25,15 +25,16 @@ def tag_project(prefix):
     with lcd(PROJECT_ROOT), hide('commands'):
         (last_tag_name, next_tag_name) = get_tag_names(prefix)
 
-        print('Last tag: %s' % last_tag_name)
-        print('Next tag: %s' % next_tag_name)
+        puts('Last tag: %s' % last_tag_name)
+        puts('Next tag: %s' % next_tag_name)
 
         if not need_to_tag("HEAD", last_tag_name):
-            print("Current tag '%s' is the most recent version." % last_tag_name)
+            puts("Current tag '%s' is the most recent version." % last_tag_name)
             return
 
-        print("Tagging project with '%s'." % next_tag_name)
+        puts("Tagging project with '%s'." % next_tag_name)
         local('git tag -a -m "Tag latest for %s." %s' % (prefix, next_tag_name))
+        local('git push origin %s' % next_tag_name)
 
 
 @task
