@@ -4,7 +4,7 @@ import os
 from fabric.api import puts, task
 from fabric.utils import indent
 
-from deploy import deploy_to_heroku
+from deploy import deploy_to_heroku, prepare_to_deploy, tag_project
 from publish import update_staticfiles, upload_staticfiles
 from settings import PROJECT_ENVIRONMENT, PROJECT_ROOT, SITE_NAME, STATIC_ROOT
 
@@ -29,5 +29,8 @@ def publish():
 @task
 def deploy():
     """Publish and deploy the site."""
+    prepare_to_deploy()
     publish()
+    # TODO: Add support for other environments.
+    tag_project('production')
     deploy_to_heroku()
