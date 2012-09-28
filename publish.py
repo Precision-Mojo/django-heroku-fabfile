@@ -20,6 +20,7 @@ def update_staticfiles(static_cache='static_cache'):
                       ignore_patterns=get_ignore_patterns())
         local('git add %s' % static_cache)
         local('git commit %s -m "Update the static files cache directory."' % static_cache)
+        local('git push')
 
 
 @task
