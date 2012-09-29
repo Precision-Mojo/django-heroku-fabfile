@@ -1,2 +1,4 @@
+*.pyc
+
 # Generated Markdown
 readme.html
