@@ -30,7 +30,7 @@ submodule. To install it as a submodule, run the following commands:
     <from the root of your repository>
     $ git submodule add git://github.com/Precision-Mojo/django-heroku-fabfile.git fabfile
     $ git submodule init
-    $ git commit -m "Clone django-heroku-fabfile as a submodule named fabfile."
+    $ git commit -m "Clone django-heroku-fabfile as a submodule."
 
 To view a list of available tasks type `fab -l`.
 
