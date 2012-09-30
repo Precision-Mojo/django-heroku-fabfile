@@ -1,9 +1,8 @@
 """Utilities used by the fabfile."""
 
-from __future__ import with_statement
-
 import datetime
 import re
+import os
 from contextlib import contextmanager
 from fabric.api import hide, local, puts
 
@@ -61,3 +60,14 @@ def is_working_directory_clean():
     if status.find('working directory clean') > -1:
         return True
     return False
+
+
+def lines_in_file(filename, skip_prefixes=None):
+    if not os.path.exists(filename):
+        return
+    if skip_prefixes is None:
+        skip_prefixes = ()
+    for line in open(filename, 'r').readlines():
+        line = line.strip()
+        if line and not line.startswith(skip_prefixes):
+            yield line

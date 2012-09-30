@@ -27,9 +27,9 @@ def publish():
 
 
 @task
-def deploy(skip_publish=False):
+def deploy(skip_publish=False,skip_clean_check=False):
     """Publish and deploy the site."""
-    prepare_to_deploy()
+    prepare_to_deploy(skip_clean_check=skip_clean_check)
     if not skip_publish:
         publish()
     # TODO: Add support for other environments.

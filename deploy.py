@@ -8,10 +8,10 @@ from utils import get_tag_names, is_working_directory_clean, need_to_tag
 
 
 @task
-def prepare_to_deploy():
+def prepare_to_deploy(skip_clean_check=False):
     """Prepare the project's working copy for deployment."""
     with lcd(PROJECT_ROOT), hide('commands'):
-        if not is_working_directory_clean():
+        if not skip_clean_check and not is_working_directory_clean():
             abort("Working directory must be clean before deployment.")
         local('git pull')
 
