@@ -15,7 +15,7 @@ def install_addons(addons_filename=ADDONS_FILENAME, ignored_addons=None):
     """Install Heroku addons listed in the specified file."""
     if ignored_addons is None:
         ignored_addons = []
-    with lcd(PROJECT_ROOT), hide('commands'):
+    with lcd(PROJECT_ROOT), hide('running'):
         for addon in lines_in_file(addons_filename, skip_prefixes=('#', '=')):
             # There might be addon-specific parameters after the addon name.
             addon = addon.split()[0]
