@@ -30,7 +30,7 @@ def upload_staticfiles(static_root=STATIC_ROOT, bucket=None):
         bucket = os.environ.get('AWS_STORAGE_BUCKET_NAME',
                                 heroku.get_config('AWS_STORAGE_BUCKET_NAME'))
     with lcd(STATIC_ROOT), hide('running'):
-        local('s3cmd sync . s3://%s -v -P' % bucket)
+        local('s3cmd -v --acl-public --guess-mime-type sync . s3://%s' % bucket)
 
 
 def collectstatic(*args, **options):
