@@ -34,8 +34,18 @@ def upload_staticfiles(static_root=STATIC_ROOT, bucket=None):
             warn('The AWS_STORAGE_BUCKET_NAME environment variable is unset or empty. '
                  'Skipping S3 upload.')
             return
+
+    # Use a project-specific .s3cfg if it exists.
+    s3cfg = os.path.join(PROJECT_ROOT, '.s3cfg')
+
+    if os.path.exists(s3cfg):
+        s3cfg_opt = '-c "%s"' % s3cfg
+    else:
+        s3cfg_opt = ''
+
     with lcd(STATIC_ROOT), hide('running'):
-        local('s3cmd -v --encrypt --acl-public --guess-mime-type sync . s3://%s' % bucket)
+        local('s3cmd -v %s --encrypt --acl-public --guess-mime-type sync . s3://%s'
+              % (s3cfg_opt, bucket))
 
 
 def collectstatic(*args, **options):
