@@ -1,7 +1,7 @@
 """Tasks that deal with publishing assets and data."""
 
 import os
-from fabric.api import hide, lcd, local, task
+from fabric.api import hide, lcd, local, task, warn
 from django.core.management import call_command
 
 from settings import PROJECT_ROOT, STATIC_ROOT
@@ -30,6 +30,10 @@ def upload_staticfiles(static_root=STATIC_ROOT, bucket=None):
     if bucket is None:
         bucket = os.environ.get('AWS_STORAGE_BUCKET_NAME',
                                 heroku.get_config('AWS_STORAGE_BUCKET_NAME'))
+        if not bucket:
+            warn('The AWS_STORAGE_BUCKET_NAME environment variable is unset or empty. '
+                 'Skipping S3 upload.')
+            return
     with lcd(STATIC_ROOT), hide('running'):
         local('s3cmd -v --acl-public --guess-mime-type sync . s3://%s' % bucket)
 
