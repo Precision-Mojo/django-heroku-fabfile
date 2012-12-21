@@ -43,9 +43,13 @@ def upload_staticfiles(static_root=STATIC_ROOT, bucket=None):
     else:
         s3cfg_opt = ''
 
+    # TODO: Read the value of the 'Encrypt' variable from .s3cfg to determine if this should be
+    # `put' or `sync'. Since we force encryption currently, it has to be `put'.
+    s3action = 'put --recursive'  # 'sync'
+
     with lcd(STATIC_ROOT), hide('running'):
-        local('s3cmd -v %s --encrypt --acl-public --guess-mime-type sync . s3://%s'
-              % (s3cfg_opt, bucket))
+        local('s3cmd -v %s --encrypt --acl-public --guess-mime-type %s . s3://%s'
+              % (s3cfg_opt, s3action, bucket))
 
 
 def collectstatic(*args, **options):
