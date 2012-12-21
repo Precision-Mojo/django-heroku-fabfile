@@ -35,7 +35,7 @@ def upload_staticfiles(static_root=STATIC_ROOT, bucket=None):
                  'Skipping S3 upload.')
             return
     with lcd(STATIC_ROOT), hide('running'):
-        local('s3cmd -v --acl-public --guess-mime-type sync . s3://%s' % bucket)
+        local('s3cmd -v --encrypt --acl-public --guess-mime-type sync . s3://%s' % bucket)
 
 
 def collectstatic(*args, **options):
