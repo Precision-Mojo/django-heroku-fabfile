@@ -21,6 +21,11 @@ def _find_site_root(project_root):
     return None
 
 
+def _module_to_filename(module_name):
+    items = module_name.split('.')
+    return os.path.join(*items) + '.py'
+
+
 # TODO: Default to development, but provide a task that initializes the
 # production environment.
 PROJECT_ENVIRONMENT = 'development'
@@ -33,8 +38,12 @@ if SITE_ROOT is None:
 SITE_NAME = os.path.basename(SITE_ROOT)
 
 with cd(PROJECT_ROOT):
-    settings_module = '%s.settings.%s' % (SITE_NAME, PROJECT_ENVIRONMENT)
-    settings_module = os.environ.get('DJANGO_SETTINGS_MODULE', settings_module)
+    # Locate the settings module in use.
+    settings_module = os.environ.get('DJANGO_SETTINGS_MODULE', '%s.settings' % SITE_NAME)
+
+    if not os.path.exists(os.path.join(PROJECT_ROOT, _module_to_filename(settings_module))):
+        settings_module = '%s.settings.%s' % (SITE_NAME, PROJECT_ENVIRONMENT)
+
     try:
         from django.conf import settings as django_settings
         django.settings_module(settings_module)
