@@ -37,19 +37,11 @@ def upload_staticfiles(static_root=STATIC_ROOT, bucket=None):
 
     # Use a project-specific .s3cfg if it exists.
     s3cfg = os.path.join(PROJECT_ROOT, '.s3cfg')
-
-    if os.path.exists(s3cfg):
-        s3cfg_opt = '-c "%s"' % s3cfg
-    else:
-        s3cfg_opt = ''
-
-    # TODO: Read the value of the 'Encrypt' variable from .s3cfg to determine if this should be
-    # `put' or `sync'. Since we force encryption currently, it has to be `put'.
-    s3action = 'put --recursive'  # 'sync'
+    command, config_opt = get_s3cmd_options(s3cfg)
 
     with lcd(STATIC_ROOT), hide('running'):
-        local('s3cmd -v %s --encrypt --acl-public --guess-mime-type %s . s3://%s'
-              % (s3cfg_opt, s3action, bucket))
+        local('s3cmd -v %s --acl-public --guess-mime-type %s . s3://%s'
+              % (config_opt, command, bucket))
 
 
 def collectstatic(*args, **options):
@@ -64,3 +56,24 @@ def get_ignore_patterns():
             if line and not line.startswith('#'):
                 ignore_patterns.append(line)
     return ignore_patterns
+
+
+def get_s3cmd_options(s3cfg):
+    """Determine the command and options to pass to s3cmd."""
+    command = 'sync'
+    config_opt = ''
+
+    if os.path.exists(s3cfg):
+        config_opt = '-c "%s"' % s3cfg
+
+        try:
+            from S3.Config import ConfigParser
+
+            config = ConfigParser(s3cfg)
+            if config.get('encrypt', default='').tolower() == 'true':
+                # If the 'encrypt' option is true, we have to use the put command instead of sync.
+                command = 'put --recursive'
+        except ImportError:
+            pass
+
+    return command, config_opt
