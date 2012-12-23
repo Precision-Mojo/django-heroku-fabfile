@@ -40,6 +40,7 @@ def upload_staticfiles(static_root=STATIC_ROOT, bucket=None):
     command, config_opt = get_s3cmd_options(s3cfg)
 
     with lcd(STATIC_ROOT), hide('running'):
+        local('s3cmd mb s3://%s' % bucket)
         local('s3cmd -v %s --acl-public --guess-mime-type %s . s3://%s'
               % (config_opt, command, bucket))
 
