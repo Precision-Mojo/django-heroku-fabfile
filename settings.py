@@ -1,8 +1,11 @@
 """Settings used throughout the fabfile."""
 
 import os
+import platform
 from fabric.api import abort, cd
 from fabric.contrib import django
+
+IS_WINDOWS = platform.system() == 'Windows'
 
 _fabfile_root = os.path.dirname(os.path.abspath(__file__))
 

@@ -1,11 +1,11 @@
 """Tasks that deal with project management."""
 
 import os
-from fabric.api import lcd, local, settings, task
+from fabric.api import hide, lcd, local, settings, task
 from django.utils.importlib import import_module
 from django.utils.module_loading import module_has_submodule
 
-from settings import django_settings
+from settings import django_settings, IS_WINDOWS, PROJECT_ROOT
 from utils import msg
 
 vendor_modules = None
@@ -48,3 +48,15 @@ def get_vendor_modules():
                 if module_has_submodule(module, 'vendor'):
                     raise
     return vendor_modules
+
+
+@task
+def runserver():
+    """Run a local development server."""
+    # If executing on Windows, prefix with "start" to invoke python in a detached window.
+    start_prefix = ''
+    if IS_WINDOWS:
+        start_prefix = 'start '
+
+    with lcd(PROJECT_ROOT), hide('running'):
+        local('%spython manage.py runserver' % start_prefix)
