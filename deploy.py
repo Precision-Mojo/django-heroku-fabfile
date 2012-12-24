@@ -43,5 +43,4 @@ def deploy_to_heroku():
     with lcd(PROJECT_ROOT):
         with heroku.maintenance(), hide('running'):
             local("git push heroku")
-            local("heroku run python manage.py syncdb --noinput")
-            local("heroku run python manage.py migrate --noinput")
+            local("heroku run fab management.syncdb")

@@ -5,7 +5,7 @@ from fabric.api import puts, task
 from fabric.utils import indent
 
 from deploy import deploy_to_heroku, prepare_to_deploy, tag_project
-from management import update_vendors, runserver
+from management import update_vendors, runserver, syncdb
 from publish import update_staticfiles, upload_staticfiles
 from settings import PROJECT_ENVIRONMENT, PROJECT_ROOT, SITE_NAME, STATIC_ROOT
 
@@ -31,6 +31,7 @@ def publish():
 def deploy(skip_publish=False, skip_clean_check=False):
     """Publish and deploy the site."""
     prepare_to_deploy(skip_clean_check=skip_clean_check)
+    syncdb()
 
     if not STATIC_ROOT:
         skip_publish = True

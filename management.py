@@ -60,3 +60,11 @@ def runserver():
 
     with lcd(PROJECT_ROOT), hide('running'):
         local('%spython manage.py runserver' % start_prefix)
+
+
+@task
+def syncdb():
+    """Synchronize database tables and run migrations for all installed apps."""
+    with lcd(PROJECT_ROOT), hide('running'):
+        local('python manage.py syncdb --noinput')
+        local('python manage.py migrate --noinput')
