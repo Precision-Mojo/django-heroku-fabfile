@@ -4,6 +4,7 @@ import os
 from fabric.api import hide, lcd, local, settings, task
 from django.utils.importlib import import_module
 from django.utils.module_loading import module_has_submodule
+from django.core.management import call_command
 
 from settings import django_settings, IS_WINDOWS, PROJECT_ROOT
 from utils import msg
@@ -66,5 +67,14 @@ def runserver():
 def syncdb():
     """Synchronize database tables and run migrations for all installed apps."""
     with lcd(PROJECT_ROOT), hide('running'):
-        local('python manage.py syncdb --noinput')
+        _syncdb(interactive=False)
         local('python manage.py migrate --noinput')
+
+
+@task
+def startapp():
+    pass
+
+
+def _syncdb(**options):
+    return call_command('syncdb', **options)
