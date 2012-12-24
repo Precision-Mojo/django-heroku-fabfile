@@ -4,8 +4,7 @@ import os
 from fabric.api import hide, lcd, local, task, warn
 from django.core.management import call_command
 
-from settings import PROJECT_ROOT, STATIC_ROOT
-import heroku
+from settings import django_settings, PROJECT_ROOT, STATIC_ROOT
 
 # File that has a list of ignore patterns to pass to collectstatic().
 IGNORE_FILE = os.path.join(PROJECT_ROOT, 'static_ignore_patterns.txt')
@@ -28,8 +27,9 @@ def update_staticfiles(static_cache='static_cache'):
 def upload_staticfiles(static_root=STATIC_ROOT, bucket=None):
     """Upload static files to Amazon S3."""
     if bucket is None:
-        bucket = os.environ.get('AWS_STORAGE_BUCKET_NAME',
-                                heroku.get_config('AWS_STORAGE_BUCKET_NAME'))
+        bucket = django_settings.get('AWS_STORAGE_BUCKET_NAME',
+                                     os.environ.get('AWS_STORAGE_BUCKET_NAME'))
+
         if not bucket:
             warn('The AWS_STORAGE_BUCKET_NAME environment variable is unset or empty. '
                  'Skipping S3 upload.')
