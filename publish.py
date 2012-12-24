@@ -27,8 +27,8 @@ def update_staticfiles(static_cache='static_cache'):
 def upload_staticfiles(static_root=STATIC_ROOT, bucket=None):
     """Upload static files to Amazon S3."""
     if bucket is None:
-        bucket = django_settings.get('AWS_STORAGE_BUCKET_NAME',
-                                     os.environ.get('AWS_STORAGE_BUCKET_NAME'))
+        bucket = getattr(django_settings, 'AWS_STORAGE_BUCKET_NAME',
+                         os.environ.get('AWS_STORAGE_BUCKET_NAME'))
 
         if not bucket:
             warn('The AWS_STORAGE_BUCKET_NAME environment variable is unset or empty. '
