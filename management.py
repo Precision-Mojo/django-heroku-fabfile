@@ -1,15 +1,16 @@
 """Tasks that deal with project management."""
 
 import os
-from fabric.api import hide, lcd, local, settings, task
+from fabric.api import hide, lcd, local, puts, settings, task
 from django.utils.importlib import import_module
 from django.utils.module_loading import module_has_submodule
 from django.core.management import call_command
 
-from settings import django_settings, IS_WINDOWS, PROJECT_ROOT
+from settings import django_settings, IS_WINDOWS, PROJECT_ROOT, SITE_ROOT
 from utils import msg
 
 vendor_modules = None
+has_south = 'south' in django_settings.INSTALLED_APPS
 
 
 @task
@@ -68,13 +69,56 @@ def syncdb():
     """Synchronize database tables and run migrations for all installed apps."""
     with lcd(PROJECT_ROOT), hide('running'):
         _syncdb(interactive=False)
-        local('python manage.py migrate --noinput')
+        _migrate(interactive=False)
 
 
 @task
-def startapp():
-    pass
+def startapp(app, directory=None):
+    """Create an app in the SITE_ROOT apps/ directory."""
+    if directory is None:
+        directory = app
+
+    apps_dir = os.path.join(SITE_ROOT, 'apps')
+    target_dir = os.path.join(apps_dir, directory)
+    apps_module = os.path.join(apps_dir, '__init__.py')
+
+    puts("Creating application %s...\n" % app)
+
+    if not os.path.exists(target_dir):
+        os.makedirs(target_dir)
+
+    if not os.path.exists(apps_module):
+        # Touch the __init__.py file under the apps/ directory.
+        open(apps_module, 'a').close()
+
+    _startapp(app_name=app, target=target_dir)
+
+    # The app's name was given, but it lives in the apps module so compose the full name.
+    app_name = 'apps.' + app
+
+    # Any other configuration tasks require that the app is in INSTALLED_APPS.
+    if not app_name in django_settings.INSTALLED_APPS:
+        django_settings.INSTALLED_APPS += (app_name,)
+
+    # Prepare South.
+    _schemamigration(app=app_name, initial=True)
+
+    puts("\nCreated %s. Add '%s' to settings.INSTALLED_APPS." % (app, app_name))
 
 
 def _syncdb(**options):
     return call_command('syncdb', **options)
+
+
+def _migrate(*args, **options):
+    if has_south:
+        return call_command('migrate', *args, **options)
+
+
+def _schemamigration(*args, **options):
+    if has_south:
+        return call_command('schemamigration', *args, **options)
+
+
+def _startapp(*args, **options):
+    return call_command('startapp', *args, **options)
