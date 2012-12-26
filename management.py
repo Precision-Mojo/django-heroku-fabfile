@@ -1,7 +1,7 @@
 """Tasks that deal with project management."""
 
 import os
-from fabric.api import hide, lcd, local, puts, settings, task
+from fabric.api import hide, lcd, local, puts, settings, task, warn
 from django.utils.importlib import import_module
 from django.utils.module_loading import module_has_submodule
 from django.core.management import call_command
@@ -104,6 +104,17 @@ def startapp(app, directory=None):
     _schemamigration(app=app_name, initial=True)
 
     puts("\nCreated %s. Add '%s' to settings.INSTALLED_APPS." % (app, app_name))
+
+
+@task
+def update_schema(app):
+    """Update the schema of the specified app."""
+    if not has_south:
+        warn('South was not found in INSTALLED_APPS. Skipping schema update for %s' % app)
+        return
+
+    # Automatically generate a schema migration.
+    _schemamigration(app=app, auto=True)
 
 
 def _syncdb(**options):
