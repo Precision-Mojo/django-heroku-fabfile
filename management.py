@@ -113,8 +113,14 @@ def update_schema(app):
         warn('South was not found in INSTALLED_APPS. Skipping schema update for %s' % app)
         return
 
-    # Automatically generate a schema migration.
-    _schemamigration(app=app, auto=True)
+    # Automatically generate a schema migration. Run a migration of the app if the schema
+    # migration is successful; if there's no work to do the auto migration wil exit, but we absorb
+    # any exit (so only the migrate is skipped).
+    try:
+        _schemamigration(app=app, auto=True)
+        _migrate(app=app, interactive=False)
+    except SystemExit:
+        pass
 
 
 def _syncdb(**options):
