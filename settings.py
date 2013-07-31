@@ -2,7 +2,7 @@
 
 import os
 import platform
-from fabric.api import abort, cd
+from fabric.api import abort, cd, env
 from fabric.contrib import django
 
 IS_WINDOWS = platform.system() == 'Windows'
@@ -29,6 +29,17 @@ def _module_to_filename(module_name):
     return os.path.join(*items) + '.py'
 
 
+def _get_test_settings_module(project_root, site_name):
+    settings_module = None
+
+    if 'test' in "\n".join(env.tasks):
+        test_settings = '%s.settings.test' % site_name
+        if os.path.exists(os.path.join(project_root, _module_to_filename(test_settings))):
+            settings_module = test_settings
+
+    return settings_module
+
+
 # TODO: Default to development, but provide a task that initializes the
 # production environment.
 PROJECT_ENVIRONMENT = 'development'
@@ -42,7 +53,10 @@ SITE_NAME = os.path.basename(SITE_ROOT)
 
 with cd(PROJECT_ROOT):
     # Locate the settings module in use.
-    settings_module = os.environ.get('DJANGO_SETTINGS_MODULE', '%s.settings' % SITE_NAME)
+    settings_module = _get_test_settings_module(PROJECT_ROOT, SITE_NAME)
+
+    if not settings_module:
+        settings_module = os.environ.get('DJANGO_SETTINGS_MODULE', '%s.settings' % SITE_NAME)
 
     if not os.path.exists(os.path.join(PROJECT_ROOT, _module_to_filename(settings_module))):
         settings_module = '%s.settings.%s' % (SITE_NAME, PROJECT_ENVIRONMENT)

@@ -6,7 +6,7 @@ from django.utils.importlib import import_module
 from django.utils.module_loading import module_has_submodule
 from django.core.management import call_command
 
-from settings import django_settings, IS_WINDOWS, PROJECT_ROOT, SITE_ROOT
+from settings import django_settings, IS_WINDOWS, PROJECT_ROOT, SITE_NAME, SITE_ROOT
 from utils import msg
 
 vendor_modules = None
@@ -123,6 +123,12 @@ def update_schema(app):
         pass
 
 
+@task
+def test(verbosity=0):
+    """Run tests."""
+    _test(verbosity=verbosity)
+
+
 def _syncdb(**options):
     return call_command('syncdb', **options)
 
@@ -139,3 +145,7 @@ def _schemamigration(*args, **options):
 
 def _startapp(*args, **options):
     return call_command('startapp', *args, **options)
+
+
+def _test(*args, **options):
+    return call_command('test', *args, **options)
